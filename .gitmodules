@@ -1,0 +1,3 @@
+[submodule "ansible-ibm-mq92-install"]
+	path = ansible-ibm-mq92-install
+	url = https://github.com/Kingill/ansible-ibm-mq92-install.git
