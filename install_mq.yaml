@@ -1,0 +1,186 @@
+##############################################################################
+# Installation IBM MQ 9.2 sur RedHat 8 / Centos 8
+#
+# A renseigner :
+# - version: 924
+# - url: "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqadv/mqadv_dev924_linux_x86-64.tar.gz"
+# - mq_file : "mqadv_dev924_linux_x86-64.tar.gz"
+# - suffix_rpm: "9.2.4-0.x86_64.rpm"
+# - dest : /mnt1
+#
+##############################################################################
+
+- name: Install IBM MQ 9.2
+  hosts: mq
+  vars:
+    - version: 924
+    - url: "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqadv/mqadv_dev924_linux_x86-64.tar.gz"
+    - mq_file : "mqadv_dev924_linux_x86-64.tar.gz"
+    - suffix_rpm: "9.2.4-0.x86_64.rpm"
+    - dest : /mnt1
+
+  become: yes
+  tasks:
+
+
+#############################################################################
+# Création vg lv fs
+##############################################################################
+# Création partition
+#- name: create a new primary partition
+#    parted:
+#      device: /dev/vdb
+#      number: 1
+#      flags: [ lvm ]
+#      state: present
+#
+# Afficher les facts lvm
+#- name: lvm debug
+#    debug:
+#      msg: "{{ ansible_lvm }}"
+#
+#############################################################################
+
+
+##############################################################################
+# Création User et Group mqm
+##############################################################################
+
+   - name: création group mqm
+     group:
+       name: mqm
+       gid: 1006
+       state: present
+     register: __group_mqm
+   - name: debug group
+     debug:
+       var: __group_mqm
+
+
+   - name: création user mqm
+     user:
+       name: mqm
+       uid: 1006
+       state: present
+       groups : mqm
+       shell: /bin/bash
+       password: "{{ 'password' | password_hash('sha512') }}"
+     register: __user_mqm
+   - name: debug user
+     debug:
+       var: __user_mqm
+
+
+#############################################################################
+# Vérification si procces MQ présent
+# En cours de dev... J'ai pas encore trouvé comment faire
+##############################################################################
+
+   - name: vérification process mqm
+     shell:
+       cmd: "ps -fu mqm | grep -v grep"
+     register: __output_pids_mqm
+   - name: debug
+     debug:
+       msg: "Process présent ? {{  __output_pids_mqm }}"
+
+
+
+##############################################################################
+# Création répertoire de dépôt
+##############################################################################
+
+   - name: création répertoire  de dépôt
+     file:
+       path: "{{ dest }}/{{ version }}"
+       state: directory
+       recurse: true
+
+##############################################################################
+# Téléchargement binaire MQ si non présent dans le répertoire
+##############################################################################
+
+   - name: stat fichier tar.gz
+     stat:
+       path: "{{ dest }}/{{ version }}/{{ mq_file }}"
+
+     register: __output_file_stat
+   - name: debug
+     debug:
+       msg: "Si le fichier tar.gz existe dans le repertoire d'installation du serveur, on ne le télécharge pas ! {{  __output_file_stat.stat.exists }}"
+
+   - name: download mq
+     get_url:
+       url: "{{ url }}"
+       dest: "{{ dest }}/{{ version }}"
+     when : __output_file_stat.stat.exists == False
+
+##############################################################################
+# tar xfz fichier tar.gz
+# Si copy n'est à no ça ne marche pas
+##############################################################################
+
+   - name: unarchive
+     unarchive:
+       src: "{{ dest }}/{{ version }}/{{ mq_file }}"
+       dest: "{{ dest }}/{{ version }}"
+       copy: no
+
+##############################################################################
+# License MQ
+##############################################################################
+
+   - name: accept license MQ
+     shell:
+       cmd: "{{ dest }}/{{ version }}/MQServer/mqlicense.sh -accept"
+     register: __output_license
+   - name: debug
+     debug:
+       msg: "{{  __output_license }}"
+
+##############################################################################
+# Installation packages MQ
+# Yum dans Ansible vérifie la signature des rpm avec une clé GPGP
+# disable_gpg_check : yes (on ne vérifie pas la signature)
+##############################################################################
+
+   - name: yum
+     yum:
+       name: "{{ packages }}"
+       disable_gpg_check : yes
+     vars:
+       packages:
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesRuntime-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesGSKit-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesServer-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesClient-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesSamples-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesJRE-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesJava-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesMan-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesMsg_fr-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesSDK-{{ suffix_rpm }}"
+       - "{{ dest }}/{{ version }}/MQServer/MQSeriesWeb-{{ suffix_rpm }}"
+       state: present
+
+   - name: setmqinst
+     shell:
+       cmd: "/opt/mqm/bin/setmqinst -i -p /opt/mqm"
+
+##############################################################################
+# Vérification Installation
+##############################################################################
+
+   - name: dspmqinst
+     command: dspmqinst
+     become: yes
+     become_user: mqm
+     register: __output_dspmqinst
+   - name: debug
+     debug:
+       msg: "{{  __output_dspmqinst }}"
+
+
+##############################################################################
+# Paramètres system kernel, limits à faire
+##############################################################################

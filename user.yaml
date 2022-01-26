@@ -1,0 +1,26 @@
+- name: user_mqm
+  hosts: mq
+  become: yes
+  tasks:
+  - name: création group mqmm
+    group:
+      name: mqm 
+      gid: 1006
+      state: present
+    register: __group_mqm
+  - name: debug group
+    debug:
+      var: __group_mqm
+
+  - name: création user mqmm
+    user:
+      name: mqm 
+      uid: 1006
+      state: present
+      groups : mqm
+      shell: /bin/bash
+      password: "{{ 'password' | password_hash('sha512') }}"
+    register: __user_mqm
+  - name: debug user
+    debug:
+      var: __user_mqm

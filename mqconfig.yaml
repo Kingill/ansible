@@ -1,0 +1,12 @@
+- name: mqconfig
+  hosts: mq
+  become: yes
+  become_method: su
+  become_user: mqm
+  tasks:
+   - name: command
+     command: /opt/mqm/bin/mqconfig
+     register: __output
+   - name: debug
+     debug:
+      var: __output
