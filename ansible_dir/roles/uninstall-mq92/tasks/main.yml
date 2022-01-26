@@ -1,0 +1,18 @@
+---
+
+##############################################################################
+# Désnstallation packages MQ
+##############################################################################
+
+   - name: yum
+     yum:
+       name: "MQSeries*"
+       state: absent
+
+     register: __output_file
+   - name: debug
+     debug:
+       var: __output_file
+
+
+   

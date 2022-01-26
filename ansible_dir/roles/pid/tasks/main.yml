@@ -14,7 +14,7 @@
 
   - name: Affichage process MQ
     debug:
-      msg: "Processes MQ présent. Vérifier que tout est arrêté pour continuer"
+      msg: "Process MQ présent. Vérifier que tout est arrêté pour continuer"
  
   - wait_for:
       path: "/proc/{{ item }}/status"

@@ -1,0 +1,6 @@
+- name: "Désinstallation IBM MQ"
+  hosts: mq
+  become: yes
+  roles : 
+  #- pid
+  - uninstall-mq92
