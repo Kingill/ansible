@@ -1,0 +1,22 @@
+---
+  - name: Process MQ
+    shell: "ps -fu mqm| grep -v grep"
+    register: running_process
+
+  - name: Affichage process MQ
+    debug:
+      msg: "Process MQ : {{ running_process.stdout_lines }} "
+ 
+
+  - name: Process MQ
+    shell: "ps -fu mqm| grep -v grep| awk '{print $2}'|grep -v PID"
+    register: running_process
+
+  - name: Affichage process MQ
+    debug:
+      msg: "Processes MQ présent. Vérifier que tout est arrêté pour continuer"
+ 
+  - wait_for:
+      path: "/proc/{{ item }}/status"
+      state: absent
+    with_items: "{{ running_process.stdout_lines }}"

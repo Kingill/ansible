@@ -1,0 +1,92 @@
+---
+##############################################################################
+# Création répertoire de dépôt
+##############################################################################
+
+   - name: création répertoire  de dépôt
+     file:
+       path: "{{ mq.dest }}/{{ mq.version }}"
+       state: directory
+       recurse: true
+
+##############################################################################
+# Téléchargement binaire MQ si non présent dans le répertoire
+##############################################################################
+
+   - name: Vérification présence fichier tar.gz sur le dépôt
+     stat:
+       path: "{{ mq.dest }}/{{ mq.version }}/{{ mq.mq_file }}"
+
+     register: __output_file_stat
+   - name: debug
+     debug:
+       msg: "Si le fichier tar.gz existe dans le repertoire d'installation du serveur, on ne le télécharge pas ! {{  __output_file_stat.stat.exists }}"
+
+   - name: download binaire mq
+     get_url:
+       url: "{{ mq.url }}"
+       dest: "{{ mq.dest }}/{{ mq.version }}"
+     when : __output_file_stat.stat.exists == False
+
+##############################################################################
+# tar xfz fichier tar.gz
+# Si copy n'est à no ça ne marche pas
+##############################################################################
+
+   - name: unarchive
+     unarchive:
+       src: "{{ mq.dest }}/{{ mq.version }}/{{ mq.mq_file }}"
+       dest: "{{ mq.dest }}/{{ mq.version }}"
+       copy: no
+
+   - name: accept license MQ
+     shell:
+       cmd: "{{ mq.dest }}/{{ mq.version }}/MQServer/mqlicense.sh -accept"
+     register: __output_license
+   - name: debug
+     debug:
+       msg: "{{  __output_license }}"
+
+##############################################################################
+# Installation packages MQ
+# Yum dans Ansible vérifie la signature des rpm avec une clé GPGP
+# disable_gpg_check : yes (on ne vérifie pas la signature)
+##############################################################################
+
+   - name: yum
+     yum:
+       name: "{{ packages }}"
+       disable_gpg_check : yes
+     vars:
+       packages:
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesRuntime-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesGSKit-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesServer-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesClient-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesSamples-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesJRE-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesJava-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesMan-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesMsg_fr-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesSDK-{{ mq.suffix_rpm }}"
+       - "{{ mq.dest }}/{{ mq.version }}/MQServer/MQSeriesWeb-{{ mq.suffix_rpm }}"
+       state: present
+
+   - name: setmqinst
+     shell:
+       cmd: "/opt/mqm/bin/setmqinst -i -p /opt/mqm"
+
+##############################################################################
+# Vérification Installation
+##############################################################################
+
+   - name: dspmqinst
+     command: dspmqinst
+     become: yes
+     become_user: mqm
+     register: __output_dspmqinst
+   - name: debug
+     debug:
+       msg: "{{  __output_dspmqinst }}"
+
+

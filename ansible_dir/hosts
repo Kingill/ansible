@@ -1,0 +1,5 @@
+[was]
+node1 ansible_user=root
+
+[mq]
+node2 ansible_user=root

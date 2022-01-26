@@ -1,0 +1,7 @@
+- name: "installation IBM MQ"
+  hosts: mq
+  become: yes
+  roles : 
+  - pid
+  - users
+  - mq92
