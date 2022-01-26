@@ -15,4 +15,11 @@
        var: __output_file
 
 
-   
+##############################################################################
+# Suppression répertoire de dépôt
+##############################################################################
+
+   - name: suppression répertoire  de dépôt
+     file:
+       path: "{{ mq.dest }}/{{ mq.version }}"
+       state: absent

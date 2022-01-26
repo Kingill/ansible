@@ -1,4 +1,10 @@
 ---
 mq:
+  #version: 922
+  #dest : /mnt1
+  
   version: 924
-  suffix_rpm: "9.2.4-0.x86_64"
+  dest : /mnt1
+
+
+   

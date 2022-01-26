@@ -1,0 +1,12 @@
+- name: dspmqver
+  hosts: mq
+  become: yes
+  become_method: su
+  become_user: mqm
+  tasks:
+   - name: command
+     command: dspmqver
+     register: __output
+   - name: debug
+     debug:
+      var: __output
