@@ -10,6 +10,7 @@
 
   - name: Process MQ
     shell: "ps -fu mqm| grep -v grep| awk '{print $2}'|grep -v PID"
+
     register: running_process
 
   - name: Affichage process MQ

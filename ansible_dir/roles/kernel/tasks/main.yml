@@ -1,0 +1,18 @@
+---
+# tasks file for kernel
+
+
+
+
+  - name: Ajustement kernel
+    sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+      state: present
+      reload: yes
+      ignoreerrors: yes
+    with_items : "{{ mq.kernel }}"
+    register: kernel
+
+
+

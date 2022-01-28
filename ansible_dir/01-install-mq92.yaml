@@ -2,6 +2,7 @@
   hosts: mq
   become: yes
   roles : 
+  - kernel
   #- pid
   - users
   - mq92
