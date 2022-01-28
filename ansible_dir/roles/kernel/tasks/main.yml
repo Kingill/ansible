@@ -1,9 +1,6 @@
 ---
 # tasks file for kernel
 
-
-
-
   - name: Ajustement kernel
     sysctl:
       name: "{{ item.name }}"
