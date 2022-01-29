@@ -1,6 +1,9 @@
 ---
 # tasks file for kernel
 
+
+
+
   - name: Ajustement kernel
     sysctl:
       name: "{{ item.name }}"
@@ -13,3 +16,10 @@
 
 
 
+  - name: ----
+    ansible.builtin.lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^%ADMIN ALL='
+      line: '%ADMIN ALL=(ALL) NOPASSWD: ALL'
+      validate: /usr/sbin/visudo -cf %s
