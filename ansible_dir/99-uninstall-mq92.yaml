@@ -2,5 +2,5 @@
   hosts: mq
   become: yes
   roles : 
-  #- pid
+  - pid
   - uninstall-mq92
