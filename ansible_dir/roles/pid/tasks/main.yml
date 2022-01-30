@@ -9,7 +9,7 @@
  
 
   - name: Process MQ
-    shell: "ps -fu mqm| grep -v grep| awk '{print $2}'|grep -v PID"
+    shell: "ps -fu mqm| grep -v sh| grep -v PID| awk '{print $2}'| cat"
 
     register: running_process
 
