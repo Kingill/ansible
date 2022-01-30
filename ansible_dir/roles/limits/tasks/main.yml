@@ -1,0 +1,13 @@
+---
+# tasks file for limits
+
+  - name: ----
+    lineinfile:
+      path: /etc/security/limits.conf
+      regex: "{{ item.name }}"
+      line: "{{ item.value }}"
+
+      state: present
+    with_items : "{{ mq.limits }}"
+    register: limits
+

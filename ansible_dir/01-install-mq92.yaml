@@ -3,6 +3,7 @@
   become: yes
   roles : 
   - pid
+  - limits
   - kernel
   - users
   - mq92

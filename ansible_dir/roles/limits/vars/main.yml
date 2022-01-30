@@ -1,0 +1,9 @@
+---
+
+# Ajuster les valeurs si nécessaire mqconfig
+mq:
+  limits:
+    -  { name: mqm.*hard.*nofile, value: 'mqm              hard    nofile          10240' }
+    -  { name: mqm.*soft.*nofile, value: 'mqm              soft    nofile          10240' }
+    -  { name: mqm.*hard.*nproc, value: 'mqm              hard    nproc           4096' }
+    -  { name: mqm.*soft.*nproc, value: 'mqm              soft    nproc           4096' }
