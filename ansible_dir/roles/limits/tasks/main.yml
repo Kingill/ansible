@@ -1,7 +1,7 @@
 ---
 # tasks file for limits
 
-  - name: ----
+  - name: limits MQ
     lineinfile:
       path: /etc/security/limits.conf
       regex: "{{ item.name }}"
