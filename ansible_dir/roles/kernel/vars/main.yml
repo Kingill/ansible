@@ -1,5 +1,6 @@
 ---
-# Ajuster les valeurs si nécessaire mqconfig
+# https://www.ibm.com/docs/fr/ibm-mq/9.2?topic=linux-configuring-tuning-operating-system
+# Ajuster les valeurs si nécessaire en fonction du resultat mqconfig
 mq:
   kernel:
     -  { name: kernel.shmmni, value: 4096 }
