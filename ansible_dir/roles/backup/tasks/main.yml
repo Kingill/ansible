@@ -25,7 +25,7 @@
    - name: archive
      archive:
        path: /var/mqm/qmgrs
-       dest: /mnt1/{{ cmdlevel }}-backup_qmgrs.tar.gz
+       dest: /mnt1/{{ cmdlevel }}-backup_qmgrs.tar.gz-{{ ansible_date_time.iso8601_basic_short }}
        format: gz
        force_archive: true
 
@@ -36,6 +36,6 @@
    - name: archive
      archive:
        path: /var/mqm/log
-       dest: /mnt1/{{ cmdlevel }}-backup_log.tar.gz
+       dest: /mnt1/{{ cmdlevel }}-backup_log.tar.gz-{{ ansible_date_time.iso8601_basic_short }}
        format: gz
        force_archive: true
