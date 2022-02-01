@@ -1,0 +1,15 @@
+- name: "installation IBM MQ"
+  hosts: mq
+  become: yes
+
+  pre_tasks:
+    - debug:
+        msg: "MQ Backup"
+
+  roles : 
+  - backup
+
+
+  post_tasks:
+    - debug:
+        msg: "MQ Backup"

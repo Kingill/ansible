@@ -13,9 +13,9 @@
 
     register: running_process
 
- # - name: Affichage process MQ
- #   debug:
- #     msg: "Process MQ présent. Vérifier que tout est arrêté pour continuer"
+  - name: Affichage process MQ
+    debug:
+      msg: "Process MQ présent. Vérifier que tout est arrêté pour continuer"
  
   - wait_for:
       path: "/proc/{{ item }}/status"

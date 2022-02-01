@@ -1,0 +1,41 @@
+---
+
+   - name: command
+     shell:
+       cmd: "dspmqver  | grep MaxCmdLevel"
+     register: __cmdlevel
+ #  - name: debug
+ #    debug:
+ #      msg: "{{ __cmdlevel  | regex_search('[0-9][0-9][0-9]') }}"
+
+
+   - name: set a new variable
+     set_fact:
+       cmdlevel: "{{ __cmdlevel  | regex_search('[0-9][0-9][0-9]') }}"
+
+   - name: MaxCmdLevel
+     debug:
+       msg: "{{ cmdlevel }}"
+
+
+##############################################################################
+# Archivage /var/mqm/qmgrs
+##############################################################################
+
+   - name: archive
+     archive:
+       path: /var/mqm/qmgrs
+       dest: /mnt1/{{ cmdlevel }}-backup_qmgrs.tar.gz
+       format: gz
+       force_archive: true
+
+##############################################################################
+# Archivage /var/mqm/log
+##############################################################################
+
+   - name: archive
+     archive:
+       path: /var/mqm/log
+       dest: /mnt1/{{ cmdlevel }}-backup_log.tar.gz
+       format: gz
+       force_archive: true

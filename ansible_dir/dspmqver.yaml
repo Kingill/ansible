@@ -4,9 +4,28 @@
   become_method: su
   become_user: mqm
   tasks:
+   
    - name: command
      command: dspmqver
      register: __output
    - name: debug
      debug:
       var: __output
+
+
+   - name: command
+     shell:
+       cmd: "dspmqver  | grep MaxCmdLevel"
+     register: __cmdlevel
+   - name: debug
+     debug:
+       msg: "{{ __cmdlevel  | regex_search('[0-9][0-9][0-9]') }}"
+
+
+   - name: set a new variable
+     set_fact:
+       cmdlevel: "{{ __cmdlevel  | regex_search('[0-9][0-9][0-9]') }}"
+
+   - name: MaxCmdLevel
+     debug:
+       msg: "{{ cmdlevel }}"
