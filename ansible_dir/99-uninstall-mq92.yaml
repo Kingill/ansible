@@ -3,4 +3,5 @@
   become: yes
   roles : 
   - pid
+  - backup
   - uninstall-mq92

@@ -1,10 +1,8 @@
 ---
 mq:
-  #version: 922
-  #dest : /mnt1
-  
-  version: 924
+
   dest : /mnt1
 
-
-   
+  #version: 922
+  version: 923
+  #version: 924

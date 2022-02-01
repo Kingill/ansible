@@ -1,6 +1,7 @@
 ---
 
    - name: command
+     become_user: mqm   
      shell:
        cmd: "dspmqver  | grep MaxCmdLevel"
      register: __cmdlevel
