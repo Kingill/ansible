@@ -7,10 +7,10 @@
         msg: "MQ Install"
 
   roles : 
-  - pid
   - limits
   - kernel
   - users
+  - pid
   - mq92
 
   post_tasks:
